@@ -1,9 +1,9 @@
 Code for
 
-The heartbeat-evoked potential is modulated by heart rate on a task and mental effort dependent manner
+The heartbeat-evoked potential in young and older adults during attention orienting
 Francesca Aprile, Marco Simões, Jorge Henriques, Paulo Carvalho, Miguel Castelo-Branco, Alejandra Sel, Maria J. Ribeiro
 
-bioRxiv ; doi: https://doi.org/
+bioRxiv ; doi: https://doi.org/10.1101/2024.01.31.578137 
 
 
 Task and acquisition parameters are described in detail in
