@@ -6,14 +6,15 @@ clear; close all;
 older = [11 12 14 20 21 22 23 32 37 38 41 43 47 48 49 52 55 57 58 63 64 65 67 69 7 70 71 75 8 83 86];
 young = [13 15 16 25 26 28 31 33 34 36 4 42 44 45 46 50 51 53 54 56 59 6 62 66 68 72 74 76 78 80 82 84 85 9];
 % all files
-files_folder = 'E:\ProjectAgeingAuditoryTask\heartbeat_evoked_potentials_study\eeg_derivatives';
-folder_content = dir(files_folder);
+files_folder = 'E:\ProjectAgeingAuditoryTask\heartbeat_evoked_potentials_study\eeg_derivatives_05Hzfilt_cardiacICs';
+full_files_folder = [files_folder filesep 'no_removed_segments'];
+folder_content = dir(full_files_folder);
 
 % subjects included
 subjects = {};
 for f = 1:length(folder_content)
-    if contains(folder_content(f).name, 'eeg_Rpeak_Tpeak')
-        subjects = [subjects, folder_content(f).name(21:24)];
+    if contains(folder_content(f).name, 'eeg_full_Rpeak_Tpeak')
+        subjects = [subjects, folder_content(f).name(26:29)];
     end
 end
 subjects = unique(subjects);
@@ -59,7 +60,7 @@ for s = 1:length(subjects)
         for f = 1:length(folder_content)
             if contains(folder_content(f).name, subjects(s)) && contains(folder_content(f).name, tasks(t))
                 filename = folder_content(f).name;
-                EEG = pop_loadset('filename', filename, 'filepath', files_folder );
+                EEG = pop_loadset('filename', filename, 'filepath', full_files_folder);
                 EEG = pop_select( EEG, 'nochannel',{'EKG'});
                 [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
             end
@@ -133,22 +134,22 @@ for s = 1:length(subjects)
 %         title([num2str(subj_number), ' - ', tasks{t}], 'FontSize', 28, 'FontWeight','normal')
         
 
-%         % regression including as independent variables IBI and cardiac
-%         % phase of target onset
-%         % [b,bint,r,rint,stats] = regress(y,X)
-%         y = zscore(RT(to_include))';
-%         x = [ones(length(RT(to_include)), 1), zscore(IBI_at_target_tmp(to_include)'), zscore([sin(cardiac_phase(to_include))]'), zscore([cos(cardiac_phase(to_include))]')];
-%         [b,bint,r,rint,stats] = regress(y, x);
+        % regression including as independent variables IBI and cardiac
+        % phase of target onset
+        % [b,bint,r,rint,stats] = regress(y,X)
+        y = zscore(RT(to_include))';
+        x = [ones(length(RT(to_include)), 1), zscore(IBI_at_target_tmp(to_include)'), zscore([sin(cardiac_phase(to_include))]'), zscore([cos(cardiac_phase(to_include))]')];
+        [b,bint,r,rint,stats] = regress(y, x);
         
         
         
-%         % regression including as independent variables IBI and cardiac
-%         % phase of target onset and interaction terms
-%         % [b,bint,r,rint,stats] = regress(y,X)
-%         y = zscore(RT(to_include))';
-%         x = [ones(length(RT(to_include)), 1), zscore(IBI_at_target_tmp(to_include)'), zscore([sin(cardiac_phase(to_include))]'), zscore([cos(cardiac_phase(to_include))]'), ...
-%             zscore(IBI_at_target_tmp(to_include)').*zscore([sin(cardiac_phase(to_include))]'), zscore(IBI_at_target_tmp(to_include)').*zscore([cos(cardiac_phase(to_include))]')];
-%         [b_inter,bint,r,rint,stats_inter] = regress(y, x);
+        % regression including as independent variables IBI and cardiac
+        % phase of target onset and interaction terms
+        % [b,bint,r,rint,stats] = regress(y,X)
+        y = zscore(RT(to_include))';
+        x = [ones(length(RT(to_include)), 1), zscore(IBI_at_target_tmp(to_include)'), zscore([sin(cardiac_phase(to_include))]'), zscore([cos(cardiac_phase(to_include))]'), ...
+            zscore(IBI_at_target_tmp(to_include)').*zscore([sin(cardiac_phase(to_include))]'), zscore(IBI_at_target_tmp(to_include)').*zscore([cos(cardiac_phase(to_include))]')];
+        [b_inter,bint,r,rint,stats_inter] = regress(y, x);
         
         
         % correlation between RT and IBI - only trials where target was presented during the
@@ -167,28 +168,28 @@ for s = 1:length(subjects)
 %         figure; plot(IBI_at_target_inc(early_phase), RT_inc(early_phase), 'o')
         
         if group == 1
-%             IBI_at_target{group, 2}(yng, t) = mean(IBI_at_target_tmp, 'omitnan');
-%             IBI_at_target_RT_corr{group, 2}(yng, t, :) = [R_IBI_RT(1, 2),P_IBI_RT(1, 2)];
-%             IBI_at_target_phase_regression{group, 2}(yng, t, :) = [b', stats];
-%             IBI_at_target_phase_interact_regres{group, 2}(yng, t, :) = [b_inter', stats_inter];
+            IBI_at_target{group, 2}(yng, t) = mean(IBI_at_target_tmp, 'omitnan');
+            IBI_at_target_RT_corr{group, 2}(yng, t, :) = [R_IBI_RT(1, 2),P_IBI_RT(1, 2)];
+            IBI_at_target_phase_regression{group, 2}(yng, t, :) = [b', stats];
+            IBI_at_target_phase_interact_regres{group, 2}(yng, t, :) = [b_inter', stats_inter];
             IBI_at_target_RT_corr_lp{group, 2}(yng, t, :) = [R_IBI_RT_lp(1, 2),P_IBI_RT_lp(1, 2)];
             IBI_at_target_RT_corr_ep{group, 2}(yng, t, :) = [R_IBI_RT_ep(1, 2),P_IBI_RT_ep(1, 2)];
         else
-%             IBI_at_target{group, 2}(old, t) = mean(IBI_at_target_tmp, 'omitnan');
-%             IBI_at_target_RT_corr{group, 2}(old, t, :) = [R_IBI_RT(1, 2),P_IBI_RT(1, 2)];
-%             IBI_at_target_phase_regression{group, 2}(old, t, :) = [b', stats];
-%             IBI_at_target_phase_interact_regres{group, 2}(old, t, :) = [b_inter', stats_inter];
+            IBI_at_target{group, 2}(old, t) = mean(IBI_at_target_tmp, 'omitnan');
+            IBI_at_target_RT_corr{group, 2}(old, t, :) = [R_IBI_RT(1, 2),P_IBI_RT(1, 2)];
+            IBI_at_target_phase_regression{group, 2}(old, t, :) = [b', stats];
+            IBI_at_target_phase_interact_regres{group, 2}(old, t, :) = [b_inter', stats_inter];
             IBI_at_target_RT_corr_lp{group, 2}(old, t, :) = [R_IBI_RT_lp(1, 2),P_IBI_RT_lp(1, 2)];
             IBI_at_target_RT_corr_ep{group, 2}(old, t, :) = [R_IBI_RT_ep(1, 2),P_IBI_RT_ep(1, 2)];
         end
     end       
 end
 
-% save IBI_at_target IBI_at_target
-% save IBI_at_target_RT_corr IBI_at_target_RT_corr
-% save IBI_at_target_phase_regression IBI_at_target_phase_regression
+save IBI_at_target IBI_at_target
+save IBI_at_target_RT_corr IBI_at_target_RT_corr
+save IBI_at_target_phase_regression IBI_at_target_phase_regression
 
-% save IBI_at_target_phase_interact_regres IBI_at_target_phase_interact_regres
+save IBI_at_target_phase_interact_regres IBI_at_target_phase_interact_regres
 
 save IBI_at_target_RT_corr_lp IBI_at_target_RT_corr_lp
 save IBI_at_target_RT_corr_ep IBI_at_target_RT_corr_ep
